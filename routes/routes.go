@@ -8,6 +8,8 @@ import (
 )
 
 func RouteInit(r fiber.Router) {
+	r.Static("/public/images", "/public/images")
+
 	r.Post("/register", controllers.Register)
 	r.Post("/login", controllers.Login)
 

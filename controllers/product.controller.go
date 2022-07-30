@@ -58,10 +58,33 @@ func ProductCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	database.DB.Debug().Create(&product)
+	// Handle file
+	file, errFile := c.FormFile("image")
+	if errFile != nil {
+		log.Println("Error File :", errFile)
+	}
+
+	filename := file.Filename
+
+	errSaveFile := c.SaveFile(file, fmt.Sprintf("./public/images/%s", filename))
+
+	if errSaveFile != nil {
+		log.Println("Fail to store file")
+	}
+
+	newProduct := entity.Product{
+		Name:   product.Name,
+		Desc:   product.Desc,
+		Price:  product.Price,
+		Image:  filename,
+		Qty:    product.Qty,
+		UserID: product.UserID,
+	}
+
+	database.DB.Debug().Create(&newProduct)
 	return c.JSON(fiber.Map{
 		"message": "create data successfully",
-		"product": product,
+		"product": newProduct,
 	})
 
 }
